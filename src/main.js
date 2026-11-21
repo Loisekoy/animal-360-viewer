@@ -5,57 +5,61 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import './style.css';
 
+const publicAsset = (path) => `${import.meta.env.BASE_URL}${path}`;
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+const isBackendUnavailable = location.hostname.endsWith('.github.io') && !apiBaseUrl;
+
 const animals = {
   fox: {
     name: '赤狐', english: 'Red fox', habitat: '森林', icon: '🦊',
-    model: '/assets/fox-realistic.glb', background: '/assets/forest-stage.png',
+    model: publicAsset('assets/fox-realistic.glb'), background: publicAsset('assets/forest-stage.png'),
     span: 4.45, grounded: true, rotationY: -0.5,
   },
   butterfly: {
     name: '蝴蝶', english: 'Blue morpho butterfly', habitat: '濕地', icon: '🦋',
-    model: '/assets/butterfly-realistic.glb', background: '/assets/wetland-stage.png',
+    model: publicAsset('assets/butterfly-realistic.glb'), background: publicAsset('assets/wetland-stage.png'),
     span: 3.7, grounded: false, rotationY: 0.25, floatY: 1.65,
   },
   penguin: {
     name: '企鵝', english: 'Penguin', habitat: '極地', icon: '🐧',
-    model: '/assets/penguin-realistic.glb', background: '/assets/polar-stage.png',
+    model: publicAsset('assets/penguin-realistic.glb'), background: publicAsset('assets/polar-stage.png'),
     span: 3.75, grounded: true, rotationY: -0.2,
   },
   whale: {
     name: '鯨魚', english: 'Humpback whale', habitat: '海洋', icon: '🐋',
-    model: '/assets/whale-realistic.glb', background: '/assets/ocean-stage.png',
+    model: publicAsset('assets/whale-realistic.glb'), background: publicAsset('assets/ocean-stage.png'),
     span: 5.55, grounded: false, rotationY: Math.PI / 2.2, floatY: 1.7,
     camera: [6.6, 3.4, 9.2], target: [0, 1.55, 0],
   },
   bat: {
     name: '蝙蝠', english: 'Bat', habitat: '洞穴', icon: '🦇',
-    model: '/assets/bat-animated.glb', background: '/assets/forest-stage.png',
+    model: publicAsset('assets/bat-animated.glb'), background: publicAsset('assets/forest-stage.png'),
     span: 4.15, grounded: false, rotationY: 0.1, floatY: 1.75,
     animation: /fly/i, stripPositionTracks: true,
   },
   lion: {
     name: '獅子', english: 'African lion', habitat: '草原', icon: '🦁',
-    model: '/assets/lion-realistic.glb', background: '/assets/savanna-stage.png',
+    model: publicAsset('assets/lion-realistic.glb'), background: publicAsset('assets/savanna-stage.png'),
     span: 4.65, grounded: true, rotationY: -0.55,
   },
   rhino: {
     name: '犀牛', english: 'White rhinoceros', habitat: '草原', icon: '🦏',
-    model: '/assets/rhino-realistic.glb', background: '/assets/savanna-stage.png',
+    model: publicAsset('assets/rhino-realistic.glb'), background: publicAsset('assets/savanna-stage.png'),
     span: 4.75, grounded: true, rotationY: -0.55,
   },
   snail: {
     name: '蝸牛', english: 'Garden snail', habitat: '濕地', icon: '🐌',
-    procedural: 'snail', background: '/assets/wetland-stage.png',
+    procedural: 'snail', background: publicAsset('assets/wetland-stage.png'),
     span: 3.5, grounded: true, rotationY: -0.45,
   },
   frog: {
     name: '青蛙', english: 'Poison dart frog', habitat: '池塘', icon: '🐸',
-    model: '/assets/frog-realistic.glb', background: '/assets/wetland-stage.png',
+    model: publicAsset('assets/frog-realistic.glb'), background: publicAsset('assets/wetland-stage.png'),
     span: 3.25, grounded: true, rotationY: -0.35, forceOpaque: true,
   },
   bird: {
     name: '鳥', english: 'European robin', habitat: '森林', icon: '🐦',
-    model: '/assets/bird-realistic.glb', background: '/assets/forest-stage.png',
+    model: publicAsset('assets/bird-realistic.glb'), background: publicAsset('assets/forest-stage.png'),
     span: 3.35, grounded: true, rotationY: -0.25,
   },
 };
@@ -161,7 +165,7 @@ scene.add(orbitRing);
 
 const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
-const ktx2Loader = new KTX2Loader().setTranscoderPath('/basis/').detectSupport(renderer);
+const ktx2Loader = new KTX2Loader().setTranscoderPath(publicAsset('basis/')).detectSupport(renderer);
 loader.setKTX2Loader(ktx2Loader);
 
 let currentAnimalId = 'fox';
@@ -499,12 +503,16 @@ function renderGuide(data, isQuestion = false) {
 
 async function requestGuide(question = '') {
   if (guideLoading) return;
+  if (isBackendUnavailable) {
+    showGuideMessage('GitHub Pages 只能託管前端，AI 導覽需要另外部署安全後端；3D 動物觀看功能仍可正常使用。', 'setup');
+    return;
+  }
   const requestedAnimalId = currentAnimalId;
   setGuideLoading(true);
   hideGuideMessage();
 
   try {
-    const response = await fetch('/api/animal-guide', {
+    const response = await fetch(`${apiBaseUrl}/api/animal-guide`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ animalId: requestedAnimalId, question }),

@@ -27,6 +27,17 @@ PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run dev
 可用 `OPENAI_MODEL` 更換模型；預設依照 OpenAI 官方 Responses API
 設定使用 `gpt-5.6`。
 
+## GitHub Pages
+
+推送到 `main` 後，`.github/workflows/deploy-pages.yml` 會自動建置並部署前端：
+
+`https://loisekoy.github.io/animal-360-viewer/`
+
+GitHub Pages 是靜態網站服務，不能執行 `server.mjs`，也不能安全保存 OpenAI
+API 金鑰。因此 Pages 版本可完整使用 10 種動物的 3D 觀看功能，但 AI 導覽需
+另外部署後端，再於建置時設定 `VITE_API_BASE_URL`。請勿把金鑰寫入前端程式或
+GitHub repository。
+
 ## 主要操作
 
 - 「選擇動物」：開啟 10 種動物的圖鑑面板
