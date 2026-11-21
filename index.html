@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#08131f" />
+    <meta name="description" content="可自由旋轉、縮放並由 OpenAI 導覽的 10 種動物 360 度 3D 展示。" />
+    <title>WILD 360｜動物 3D 互動展示</title>
+  </head>
+  <body>
+    <main class="experience" style="--stage-image: url('/assets/forest-stage.png')">
+      <header class="topbar">
+        <a class="brand" href="#viewer" aria-label="回到動物展示">
+          <span>WILD</span><span class="brand__number">360</span>
+        </a>
+        <span class="topbar__line" aria-hidden="true"></span>
+        <span class="animal-count" aria-label="共有 10 種動物">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8.3 11.2c1.5-1.6 2.1-3.1 3.7-3.1s2.2 1.5 3.7 3.1c1.4 1.5 3.3 2.4 3.3 4.5 0 2-1.7 3.3-3.5 3.3-1.4 0-2.3-.7-3.5-.7s-2.1.7-3.5.7C6.7 19 5 17.7 5 15.7c0-2.1 1.9-3 3.3-4.5Z"/><circle cx="5.5" cy="8.5" r="2"/><circle cx="10" cy="5" r="2"/><circle cx="14" cy="5" r="2"/><circle cx="18.5" cy="8.5" r="2"/></svg>
+          <span>10 種動物</span>
+        </span>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <h1 id="page-title">與赤狐面對面</h1>
+        <p>拖曳旋轉・滾輪縮放・探索真實細節</p>
+      </section>
+
+      <section id="viewer" class="viewer" aria-label="赤狐 3D 互動展示區">
+        <canvas id="scene" tabindex="0" aria-label="可拖曳旋轉、縮放的赤狐 3D 模型" aria-describedby="keyboard-help"></canvas>
+        <div class="drag-cue" aria-hidden="true">
+          <svg viewBox="0 0 620 100" preserveAspectRatio="none"><path d="M12 68C145 11 475 11 608 68"/><path d="m18 67 17-2-8 13M602 67l-17-2 8 13"/></svg>
+          <svg class="drag-cue__hand" viewBox="0 0 48 48"><path d="M18 22V10a3 3 0 0 1 6 0v9-12a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v10-5a3 3 0 0 1 6 0v11c0 9-6 16-15 16h-2c-6 0-10-3-13-8l-5-8a3 3 0 0 1 5-4l6 7"/></svg>
+        </div>
+        <div class="model-loading" role="status" aria-live="polite"><span class="loading-ring"></span><span id="loading-label">正在載入赤狐模型…</span></div>
+        <div class="model-error" role="alert" hidden><strong>3D 模型載入失敗</strong><button type="button" id="retry-model">再試一次</button></div>
+      </section>
+
+      <div class="controls" aria-label="3D 模型控制">
+        <button id="open-animal-picker" class="control control--picker" type="button" aria-expanded="false">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8.3 11.2c1.5-1.6 2.1-3.1 3.7-3.1s2.2 1.5 3.7 3.1c1.4 1.5 3.3 2.4 3.3 4.5 0 2-1.7 3.3-3.5 3.3-1.4 0-2.3-.7-3.5-.7s-2.1.7-3.5.7C6.7 19 5 17.7 5 15.7c0-2.1 1.9-3 3.3-4.5Z"/><circle cx="5.5" cy="8.5" r="2"/><circle cx="10" cy="5" r="2"/><circle cx="14" cy="5" r="2"/><circle cx="18.5" cy="8.5" r="2"/></svg>
+          <span>選擇動物</span>
+        </button>
+        <button id="auto-rotate" class="control control--toggle" type="button" role="switch" aria-checked="true"><span class="toggle-icon" aria-hidden="true"><span class="toggle-icon__dot"></span></span><span>自動旋轉</span></button>
+        <button id="reset-view" class="control" type="button"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4.7 8.1A8 8 0 1 1 4 15"/><path d="M4.7 3.9v4.2h4.2"/></svg><span>重設視角</span></button>
+        <button id="open-guide" class="guide-button" type="button" aria-expanded="false"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2c.7 5.3 2.7 7.3 8 8-5.3.7-7.3 2.7-8 8-.7-5.3-2.7-7.3-8-8 5.3-.7 7.3-2.7 8-8Z"/><path d="M19 16c.3 2 1 2.7 3 3-2 .3-2.7 1-3 3-.3-2-1-2.7-3-3 2-.3 2.7-1 3-3Z"/></svg><span>AI 動物導覽</span></button>
+      </div>
+
+      <div class="view-label" aria-hidden="true"><span>360°</span><span>INTERACTIVE VIEW</span></div>
+
+      <section id="animal-picker" class="animal-picker" aria-labelledby="animal-picker-title" aria-hidden="true">
+        <div class="animal-picker__header">
+          <div><span class="eyebrow">WILDLIFE COLLECTION</span><h2 id="animal-picker-title">選擇動物</h2></div>
+          <button id="close-animal-picker" class="icon-button" type="button" aria-label="關閉動物選單"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></svg></button>
+        </div>
+        <div id="animal-grid" class="animal-grid" role="list"></div>
+      </section>
+
+      <aside id="guide-panel" class="guide-panel" aria-labelledby="guide-title" aria-hidden="true">
+        <div class="guide-panel__header">
+          <div><h2 id="guide-title">赤狐小百科</h2><span class="guide-panel__source">OPENAI 導覽員</span></div>
+          <button id="close-guide" class="icon-button" type="button" aria-label="關閉 AI 導覽"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></svg></button>
+        </div>
+        <div id="guide-content" class="guide-panel__content" aria-live="polite">
+          <div class="guide-section"><h3>棲息地</h3><div class="skeleton"><span></span><span></span></div><p data-field="habitat"></p></div>
+          <div class="guide-section"><h3>生活習性</h3><div class="skeleton"><span></span><span></span></div><p data-field="behavior"></p></div>
+          <div class="guide-section"><h3>冷知識</h3><div class="skeleton"><span></span><span></span></div><p data-field="fact"></p></div>
+          <div class="guide-answer" hidden><span>導覽員回答</span><p data-field="answer"></p></div>
+          <div class="guide-message" hidden></div>
+        </div>
+        <form id="guide-form" class="guide-form">
+          <label class="sr-only" id="guide-question-label" for="guide-question">詢問赤狐相關問題</label>
+          <input id="guide-question" name="question" type="text" maxlength="200" autocomplete="off" placeholder="還想知道什麼？" />
+          <button type="submit">提問</button>
+        </form>
+      </aside>
+
+      <div id="panel-scrim" class="panel-scrim" aria-hidden="true"></div>
+      <p class="sr-only" id="keyboard-help">使用左右方向鍵旋轉模型，上下方向鍵調整觀看角度，加號與減號縮放，Home 鍵重設視角。</p>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

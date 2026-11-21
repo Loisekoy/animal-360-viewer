@@ -1,0 +1,21 @@
+{
+  "name": "animal-360-viewer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env.local server.mjs",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "start": "NODE_ENV=production node --env-file-if-exists=.env.local server.mjs"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "openai": "^6.9.0",
+    "three": "^0.181.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "vite": "^7.2.2"
+  }
+}
